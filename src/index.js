@@ -1,23 +1,28 @@
-const http = require('http');
-const path = require('path');
-const express = require('express');
-require('./db/mongoose');
+const http = require("http");
+const path = require("path");
+const express = require("express");
+require("./db/mongoose");
 
-const userRouter = require('./routers/user');
-const taskRouter = require('./routers/task');
-const listRouter = require('./routers/list');
-const projectRouter = require('./routers/project');
-const teamRouter = require('./routers/team');
-const calendarRouter = require('./routers/calendar');
-const messageRouter = require('./routers/message');
-const commentRouter = require('./routers/comment');
+const userRouter = require("./routers/user");
+const taskRouter = require("./routers/task");
+const listRouter = require("./routers/list");
+const projectRouter = require("./routers/project");
+const teamRouter = require("./routers/team");
+const calendarRouter = require("./routers/calendar");
+const messageRouter = require("./routers/message");
+const commentRouter = require("./routers/comment");
+const { initEnvironment } = require("../utils/initializeEnvironment");
+const SocketService = require("./socket/socket");
+
+initEnvironment();
 
 const app = express();
 const server = http.createServer(app);
-(require('./socket/socketio.js'))(server);
+
+SocketService.initializeSocketServer(server);
 
 const port = process.env.PORT;
-const publicPath = path.join(__dirname, '../public/');
+const publicPath = path.join(__dirname, "../public/");
 
 app.use(express.json());
 app.use(userRouter);
@@ -30,7 +35,6 @@ app.use(messageRouter);
 app.use(commentRouter);
 app.use(express.static(publicPath));
 
-
 server.listen(port, () => {
-    console.log(`Server is up on port: ${port}`);
+  console.log(`Server is up on port: ${port}`);
 });
